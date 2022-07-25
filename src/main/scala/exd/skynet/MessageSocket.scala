@@ -1,4 +1,4 @@
-package fs2chat
+package exd.skynet
 
 import cats.effect.Concurrent
 import cats.effect.std.Queue

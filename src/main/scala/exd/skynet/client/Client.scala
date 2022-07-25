@@ -1,5 +1,4 @@
-package fs2chat
-package client
+package exd.skynet.client
 
 import cats.ApplicativeError
 import cats.effect.Concurrent
@@ -9,6 +8,8 @@ import fs2.io.net.SocketGroup
 import java.net.ConnectException
 
 import cats.effect.kernel.Temporal
+import exd.skynet.Protocol.{ClientCommand, ServerCommand}
+import exd.skynet.{MessageSocket, Protocol, UserQuit, Username}
 
 import scala.concurrent.duration._
 
@@ -42,8 +43,8 @@ object Client {
             Stream
               .eval(
                 MessageSocket(socket,
-                              Protocol.ServerCommand.codec,
-                              Protocol.ClientCommand.codec,
+                              ServerCommand.codec,
+                              ClientCommand.codec,
                               128))
               .flatMap { messageSocket =>
                 Stream.eval(messageSocket.write1(

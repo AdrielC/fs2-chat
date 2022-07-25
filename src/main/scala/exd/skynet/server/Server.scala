@@ -1,5 +1,4 @@
-package fs2chat
-package server
+package exd.skynet.server
 
 import cats.effect.Ref
 import cats.effect.{Concurrent, Sync}
@@ -12,6 +11,7 @@ import org.typelevel.log4cats.Logger
 import java.util.UUID
 
 import cats.effect.kernel.Async
+import exd.skynet.{MessageSocket, Protocol, UserQuit, Username}
 
 object Server {
 

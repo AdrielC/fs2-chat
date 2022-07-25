@@ -1,4 +1,5 @@
-package fs2chat
+package exd.skynet
+
 import scala.util.control.NoStackTrace
 
 final class UserQuit extends Exception with NoStackTrace

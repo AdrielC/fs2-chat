@@ -1,5 +1,4 @@
-package fs2chat
-package server
+package exd.skynet.server
 
 import cats.effect.{ExitCode, IO, IOApp}
 import cats.implicits._

@@ -1,5 +1,4 @@
-package fs2chat
-package client
+package exd.skynet.client
 
 import cats.effect.kernel.Async
 import cats.effect.Sync
@@ -23,7 +22,7 @@ object Console {
     Sync[F].delay {
       new Console[F] { self =>
         private[this] val reader =
-          LineReaderBuilder.builder().appName("fs2chat").build()
+          LineReaderBuilder.builder().appName("exd/skynet").build()
         reader.setOpt(org.jline.reader.LineReader.Option.ERASE_LINE_ON_FINISH)
 
         def println(msg: String): F[Unit] =

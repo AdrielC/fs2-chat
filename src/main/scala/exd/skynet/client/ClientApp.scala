@@ -1,11 +1,13 @@
-package fs2chat
-package client
+package exd.skynet.client
 
 import cats.effect.{ExitCode, IO, IOApp}
 import cats.implicits._
-import com.comcast.ip4s.{Port, SocketAddress, Host}
+import com.comcast.ip4s.{Host, Port, SocketAddress}
 import com.monovore.decline._
-import fs2.io.net.{Network}
+import exd.skynet.Username
+import fs2.io.net.Network
+
+import scala.Console
 
 object ClientApp extends IOApp {
   private val argsParser: Command[(Username, SocketAddress[Host], Int)] =
