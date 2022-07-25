@@ -1,12 +1,12 @@
 package fs2chat
 
 import cats.effect.Concurrent
+import cats.effect.std.Queue
 import cats.implicits._
 import fs2.Stream
-import fs2.concurrent.Queue
-import fs2.io.tcp.Socket
+import fs2.interop.scodec.{StreamDecoder, StreamEncoder}
+import fs2.io.net.Socket
 import scodec.{Decoder, Encoder}
-import scodec.stream.{StreamDecoder, StreamEncoder}
 
 /**
   * Socket which reads a stream of messages of type `In` and allows writing
@@ -31,15 +31,16 @@ object MessageSocket {
       new MessageSocket[F, In, Out] {
         def read: Stream[F, In] = {
           val readSocket = socket
-            .reads(1024)
+            .reads
             .through(StreamDecoder.many(inDecoder).toPipeByte[F])
 
-          val writeOutput = outgoing.dequeue
+          val writeOutput = Stream
+            .fromQueueUnterminated(outgoing)
             .through(StreamEncoder.many(outEncoder).toPipeByte)
-            .through(socket.writes(None))
+            .through(socket.writes)
 
           readSocket.concurrently(writeOutput)
         }
-        def write1(out: Out): F[Unit] = outgoing.enqueue1(out)
+        def write1(out: Out): F[Unit] = outgoing.offer(out)
       }
 }

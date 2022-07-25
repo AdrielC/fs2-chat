@@ -1,27 +1,28 @@
 organization := "co.fs2"
 name := "fs2-chat"
 
-scalaVersion := "2.13.0"
+scalaVersion := "2.13.8"
 
 resolvers += "Sonatype Public" at "https://oss.sonatype.org/content/groups/public/"
 
 libraryDependencies ++= Seq(
-  "co.fs2" %% "fs2-io" % "1.1.0-M1",
-  "io.chrisdavenport" %% "log4cats-slf4j" % "0.4.0-M2",
-  "org.slf4j" % "slf4j-simple" % "1.7.26",
-  "com.comcast" %% "ip4s-cats" % "1.2.1",
-  "org.scodec" %% "scodec-stream" % "2.0.0-SNAPSHOT",
+  "co.fs2" %% "fs2-io" % "3.2.7",
+  "co.fs2" %% "fs2-scodec" % "3.2.7",
   "org.jline" % "jline" % "3.12.1",
-  "com.monovore" %% "decline" % "0.7.0-M0"
+  "com.monovore" %% "decline" % "2.3.0",
+  "org.typelevel" %% "squants" % "1.6.0",
+  "org.slf4j" % "slf4j-simple" % "1.7.30",
+  "org.typelevel" %% "log4cats-slf4j"   % "2.4.0",  // Direct Slf4j Support - Recommended
 )
 
 fork in run := true
 outputStrategy := Some(StdoutOutput)
 connectInput in run := true
 
-scalafmtOnCompile := true
+scalafmtOnCompile := false
 
-addCompilerPlugin("org.scalameta" % "semanticdb-scalac_2.13.0" % "4.2.0")
+addCompilerPlugin("org.scalameta" % "semanticdb-scalac_2.13.8" % "4.5.9")
+
 scalacOptions ++= List(
   "-feature",
   "-language:higherKinds",
@@ -29,6 +30,6 @@ scalacOptions ++= List(
   "-Yrangepos",
   "-Ywarn-unused"
 )
-scalafixDependencies in ThisBuild += "com.nequissimus" %% "sort-imports" % "0.1.3"
+scalafixDependencies in ThisBuild += "com.nequissimus" %% "sort-imports" % "0.6.1"
 
 enablePlugins(UniversalPlugin, JavaAppPackaging)

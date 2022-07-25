@@ -2,39 +2,43 @@ package fs2chat
 package client
 
 import cats.ApplicativeError
-import cats.effect.{Concurrent, ContextShift, Timer}
-import com.comcast.ip4s.{IpAddress, SocketAddress}
+import cats.effect.Concurrent
+import com.comcast.ip4s.{Host, SocketAddress}
 import fs2.{RaiseThrowable, Stream}
-import fs2.io.tcp.SocketGroup
+import fs2.io.net.SocketGroup
 import java.net.ConnectException
+
+import cats.effect.kernel.Temporal
+
 import scala.concurrent.duration._
 
 object Client {
-  def start[F[_]: Concurrent: ContextShift: Timer](
-      console: Console[F],
-      socketGroup: SocketGroup,
-      address: SocketAddress[IpAddress],
-      desiredUsername: Username): Stream[F, Unit] =
+  def start[F[_]: Temporal](console: Console[F],
+                            socketGroup: SocketGroup[F],
+                            address: SocketAddress[Host],
+                            desiredUsername: Username): Stream[F, Unit] =
     connect(console, socketGroup, address, desiredUsername).handleErrorWith {
       case _: ConnectException =>
         val retryDelay = 5.seconds
-        Stream.eval_(
+        Stream.eval(
           console.errorln(s"Failed to connect. Retrying in $retryDelay.")) ++
           start(console, socketGroup, address, desiredUsername)
             .delayBy(retryDelay)
       case _: UserQuit => Stream.empty
+
+      case other => Stream.raiseError(other)
     }
 
-  private def connect[F[_]: Concurrent: ContextShift](
+  private def connect[F[_]: Concurrent](
       console: Console[F],
-      socketGroup: SocketGroup,
-      address: SocketAddress[IpAddress],
+      socketGroup: SocketGroup[F],
+      address: SocketAddress[Host],
       desiredUsername: Username): Stream[F, Unit] =
-    Stream.eval_(console.info(s"Connecting to server $address")) ++
+    Stream.eval(console.info(s"Connecting to server $address")) ++
       Stream
-        .resource(socketGroup.client[F](address.toInetSocketAddress))
+        .resource(socketGroup.client(address))
         .flatMap { socket =>
-          Stream.eval_(console.info("🎉 Connected! 🎊")) ++
+          Stream.eval(console.info("🎉 Connected! 🎊")) ++
             Stream
               .eval(
                 MessageSocket(socket,
@@ -42,7 +46,7 @@ object Client {
                               Protocol.ClientCommand.codec,
                               128))
               .flatMap { messageSocket =>
-                Stream.eval_(messageSocket.write1(
+                Stream.eval(messageSocket.write1(
                   Protocol.ClientCommand.RequestUsername(desiredUsername))) ++
                   processIncoming(messageSocket, console).concurrently(
                     processOutgoing(messageSocket, console))
