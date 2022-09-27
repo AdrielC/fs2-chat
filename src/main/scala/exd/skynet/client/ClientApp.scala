@@ -7,8 +7,6 @@ import com.monovore.decline._
 import exd.skynet.Username
 import fs2.io.net.Network
 
-import scala.Console
-
 object ClientApp extends IOApp {
   private val argsParser: Command[(Username, SocketAddress[Host], Int)] =
     Command("fs2chat-client", "FS2 Chat Client") {

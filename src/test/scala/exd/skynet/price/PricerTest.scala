@@ -5,8 +5,11 @@ import squants.time._
 
 object PricerTest extends App {
 
-  val exchangeRates = List(USD / CAD(1.05), USD / MXN(12.50), USD / JPY(100))
-
+  val exchangeRates = List(
+    USD / CAD(1.05),
+    USD / MXN(12.50),
+    USD / JPY(100)
+  )
 
   implicit val moneyContext = defaultMoneyContext withExchangeRates exchangeRates
 

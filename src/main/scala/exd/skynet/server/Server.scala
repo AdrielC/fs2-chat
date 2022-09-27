@@ -133,9 +133,10 @@ object Server {
   private def processIncoming[F[_]](
       clients: Clients[F],
       clientId: UUID,
-      messageSocket: MessageSocket[F,
-                                   Protocol.ClientCommand,
-                                   Protocol.ServerCommand])(
+      messageSocket: MessageSocket[
+        F,
+        Protocol.ClientCommand,
+        Protocol.ServerCommand])(
       implicit F: MonadError[F, Throwable]): Stream[F, Nothing] =
     messageSocket.read.evalMap {
       case Protocol.ClientCommand.RequestUsername(username) =>
